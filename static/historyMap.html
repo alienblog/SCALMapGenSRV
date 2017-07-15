@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta charset="utf-8" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body,
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .BMap_stdMpCtrl {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script type="text/javascript" src="./jquery.min.js"></script>
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=if2nx4S512iN1l72ZjPQYdFOsb4F56lQ"></script>
+    <script type="text/javascript">
+        var ak = 'DIm4fQkBGR2aZWorGMDPILqclf46gAX5'
+        var serviceId = '139760'
+        var map = {}
+
+        window.onload = function () {
+            init({
+                strokeColor: "blue",
+                strokeWeight: 4,
+                strokeOpacity: 0.5
+            })
+        }
+
+        function render(code, start, end) {
+            $('#done').remove();
+            getHistoryLinePoint(code, start, end, function (polyLineParams, start_point, end_point) {
+                console.log(polyLineParams)
+                console.log(start_point)
+                console.log(end_point)
+                var polyline = new BMap.Polyline(polyLineParams); //创建折线
+                map.addOverlay(polyline); //增加折线
+                var Bounds = polyline.getBounds();
+                var zoom = getZoom(Bounds.getSouthWest(), Bounds.getNorthEast(), map);
+                map.centerAndZoom(Bounds.getCenter(), zoom);
+
+                var marker = new BMap.Marker(start_point, {
+                    title: '起点'
+                });
+                map.addOverlay(marker);
+                marker = new BMap.Marker(end_point, {
+                    title: '终点'
+                });
+                map.addOverlay(marker);
+                $('body').append('<input type="hidden" id="done" />')
+            });
+        }
+
+        function init(params) {
+            //初始化地图
+            map = new BMap.Map('map');
+            var point = new BMap.Point(104.073516, 30.647391); // 地图的中心地理坐标。
+            map.centerAndZoom(point, 18);
+            map.addControl(new BMap.NavigationControl());
+            map.addControl(new BMap.ScaleControl());
+            map.enableScrollWheelZoom(true);
+            //获取车辆鹰眼坐标库
+
+        }
+
+        function getHistoryLinePoint(code, start, end, callback) {
+            // var params = {
+            //     ak: ak,
+            //     service_id: serviceId,
+            //     entity_name: code, //getUrlInfo('DriverCode'),
+            //     start_time: parseInt(start / 1000), //getUrlInfo('start_time'),
+            //     end_time: parseInt(end / 1000), //getUrlInfo('end_time'),
+            //     is_processed: 1,
+            //     page_size: 5000
+            // };
+            var api_url = '/data/' + code + '/' + start + '/' + end;
+            try {
+                $.get(api_url, function (res) {
+                    if (res.length == 0)
+                        return;
+                    var polyLineParams = [];
+                    var l = res.length
+                    var start_point = new BMap.Point(res[0].longitude, res[0].latitude);
+                    var location;
+                    for (var i in res) {
+                        location = res[i];
+                        polyLineParams.push(new BMap.Point(location.longitude, location.latitude));
+                    }
+                    var end_point = new BMap.Point(res[l - 1].longitude, res[l - 1].latitude);
+                    callback(polyLineParams, start_point, end_point);
+                }, 'json');
+            } catch (e) {
+                $('body').html(e);
+            }
+
+        }
+        /**
+         * 获取url参数
+         * @author duantingting@bestwise.cc 2017-01-19
+         * @param  {[type]} name [description]
+         * @return {[type]}      [description]
+         */
+        function getUrlInfo(name) {
+            var url = decodeURI(window.document.location.search.substr(1));
+            if (name) {
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+                var r = url.match(reg);
+                if (r !== null) return unescape(r[2]);
+                return null;
+            } else {
+                if (typeof (url) == "string" && url.length > 0) {
+                    var u = url.split("&"),
+                        getInfo = {},
+                        j = '';
+                    for (var i in u) {
+                        j = u[i].split("=");
+                        getInfo[j[0]] = j[1];
+                    }
+                    return getInfo;
+                }
+                return {};
+            }
+        };
+        //根据经纬极值计算绽放级别。  
+        function getZoom(southWest, northEast, map) {
+            var zoom = ["50", "100", "200", "500", "1000", "2000", "5000", "10000", "20000", "25000", "50000", "100000",
+                "200000", "500000", "1000000", "2000000"
+            ] //级别18到3。
+            var distance = map.getDistance(southWest, northEast).toFixed(1); //获取两点距离,保留小数点后两位  
+            for (var i = 0, zoomLen = zoom.length; i < zoomLen; i++) {
+                if (zoom[i] - distance > 0) {
+                    return 18 - i + 3; //之所以会多3，是因为地图范围常常是比例尺距离的10倍以上。所以级别会增加3。  
+                }
+            };
+        }
+    </script>
+</body>
+
+</html>
