@@ -16,7 +16,7 @@ if __web_host:
     config['host'] = __web_host
 
 __phantomjs_url = os.environ.get('PHANTOMJS_URL')
-if __phantomjs_host:
+if __phantomjs_url:
     config['phantomjs-url'] = __phantomjs_url
 
 __web_port = os.environ.get("WEB_PORT")

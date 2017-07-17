@@ -14,8 +14,8 @@ dcap = dict(DesiredCapabilities.PHANTOMJS)  #设置userAgent
 dcap["phantomjs.page.settings.userAgent"] = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:54.0) Gecko/20100101 Firefox/54.0")
 
 print('Init PhantomJS...')
-# driver = webdriver.Remote(command_executor=config['phantomjs-url'], desired_capabilities=dcap)
-driver = webdriver.Remote(command_executor='http://127.0.0.1:8910', desired_capabilities=dcap)
+driver = webdriver.Remote(command_executor=config['phantomjs-url'], desired_capabilities=dcap)
+# driver = webdriver.Remote(command_executor='http://127.0.0.1:8910', desired_capabilities=dcap)
 driver.set_page_load_timeout(300)
 driver.set_window_size(800, 600)
 print('Init PhantomJS done')
