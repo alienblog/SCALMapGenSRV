@@ -11,6 +11,18 @@ config['host'] = '192.168.0.131'
 config['port'] = 81
 config['phantomjs-url'] = 'http://127.0.0.1:8910'
 
+__web_host = os.environ.get('WEB_HOST')
+if __web_host:
+    config['host'] = __web_host
+
+__phantomjs_url = os.environ.get('PHANTOMJS_URL')
+if __phantomjs_host:
+    config['phantomjs-url'] = __phantomjs_url
+
+__web_port = os.environ.get("WEB_PORT")
+if __web_port:
+    config['port'] = __web_port
+
 mongo_config['host'] = "192.168.0.55"
 mongo_config['port'] = 27017
 mongo_config['user'] = 'admin'
