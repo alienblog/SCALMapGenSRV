@@ -4,8 +4,12 @@ import os
 mongo_config = {}
 config = {}
 baidu = {}
+baidu['ak'] = 'DIm4fQkBGR2aZWorGMDPILqclf46gAX5'
+baidu['serviceid'] = '139760'
 
+config['host'] = '192.168.0.131'
 config['port'] = 81
+config['phantomjs-url'] = 'http://127.0.0.1:8910'
 
 mongo_config['host'] = "192.168.0.55"
 mongo_config['port'] = 27017
@@ -30,5 +34,7 @@ if __mongo_pwd:
 
 __baidu_ak = os.environ.get('BAIDU_AK')
 __baidu_serviceid = os.environ.get('BAIDU_SERID')
-baidu['ak'] = __baidu_ak
-baidu['serviceid'] = __baidu_serviceid
+if __baidu_ak:
+    baidu['ak'] = __baidu_ak
+if __baidu_serviceid:    
+    baidu['serviceid'] = __baidu_serviceid
