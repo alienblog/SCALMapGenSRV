@@ -20,8 +20,8 @@ def getpoints_mongo(entity, start, end):
     data = []
     criteria = {}
     criteria['loc_time'] = {
-        "$gte": int(int(start) / 1000),
-        "$lte": int(int(end) / 1000),
+        "$gte": int((int(start)-28800000) / 1000),
+        "$lte": int((int(end)-28800000) / 1000),
     }
     criteria['entityname'] = entity
     print(criteria)
