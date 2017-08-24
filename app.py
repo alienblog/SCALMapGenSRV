@@ -35,7 +35,7 @@ def getpoints_baidu(entity, start, end):
     AK = baidu['ak']
     serviceID = baidu['serviceid']
     url = 'http://yingyan.baidu.com/api/v3/track/gettrack?ak={}&service_id={}&entity_name={}&' \
-              'start_time={}&end_time={}'.format(AK, serviceID, entity, int(int(start) / 1000), int(int(end) / 1000))
+              'start_time={}&end_time={}'.format(AK, serviceID, entity, int((int(start)-28800000) / 1000), int((int(end)-28800000) / 1000))
     res = requests.get(url)
     data = res.json()
     print(data)
